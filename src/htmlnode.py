@@ -1,3 +1,18 @@
+import re
+
+
+def is_valid_tag(tag):
+    return re.match(r"^[a-zA-Z][a-zA-Z0-9\-:]*$", tag) is not None
+
+
+def html_escape(text):
+    return (text.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+            .replace("'", "&#39;"))
+
+
 class HTMLNode:
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
@@ -18,4 +33,3 @@ class HTMLNode:
                 f"{self.value if self.value else 'None'}, "
                 f"{self.children if self.children else 'None'}, "
                 f"{self.props if self.props else 'None'})")
-
