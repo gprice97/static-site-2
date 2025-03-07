@@ -2,6 +2,8 @@ import re
 
 
 def is_valid_tag(tag):
+    if tag is None:
+        return None
     return re.match(r"^[a-zA-Z][a-zA-Z0-9\-:]*$", tag) is not None
 
 
