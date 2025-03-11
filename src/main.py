@@ -1,7 +1,6 @@
 from htmlnode import HTMLNode
 from leafnode import LeafNode
-from textnode import TextNode
-from textnode import TextType
+from textnode import TextNode, TextType, text_node_to_html_node
 
 
 def main():
@@ -11,7 +10,8 @@ def main():
     print(my_html_node.__repr__())
     to_html_test = LeafNode("a", "Yahoo!", {"href": "https://www.yahoo.com", "alt-text": "I love the internet!"})
     print(to_html_test)
-
+    node = TextNode("This is a text node", TextType.NORMAL)
+    print(text_node_to_html_node(node))
 
 
 if __name__ == "__main__":
