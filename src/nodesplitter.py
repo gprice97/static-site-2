@@ -17,8 +17,3 @@ class NodeSplitter:
                 else:
                     new_nodes.append(TextNode(node_text, node.text_type))
         return new_nodes
-
-
-
-
-
