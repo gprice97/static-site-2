@@ -17,6 +17,10 @@ def main():
     node_1 = TextNode("This is text with **BOLD** written all over it", TextType.NORMAL)
     new_nodes = splitter.split_nodes_delimiter([node_1], "**", TextType.BOLD)
     print(new_nodes)
+    text = "[This link has [brackets] in it](http://example.com)"
+    text_2 = "[link](http://example.com(with)stuff)"
+    print(splitter.extract_markdown_links(text_2))
+
 
 
 if __name__ == "__main__":

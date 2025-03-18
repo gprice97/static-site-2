@@ -1,4 +1,5 @@
 from textnode import TextType, TextNode
+import re
 
 
 class NodeSplitter:
@@ -17,3 +18,17 @@ class NodeSplitter:
                 else:
                     new_nodes.append(TextNode(node_text, node.text_type))
         return new_nodes
+
+    # Example text: "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)
+    # Example return: # [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+    @staticmethod
+    def extract_markdown_images(text):
+        match_image_text = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+        return match_image_text
+
+    # Example text: "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+    # Example return [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+    @staticmethod
+    def extract_markdown_links(text):
+        match_image_text = re.findall(r"\[(.*?)\]\((.*?)\)", text)
+        return match_image_text

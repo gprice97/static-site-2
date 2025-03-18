@@ -69,3 +69,40 @@ class TestNodeSplitter(unittest.TestCase):
             TextNode("for item in items: print(str(item))", TextType.CODE),
             TextNode(" I think its really neat", TextType.NORMAL)
         ])
+
+    def test_extract_markdown_images(self):
+        match_extractor = NodeSplitter
+        matches = match_extractor.extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_images_nested_brackets(self):
+        match_extractor = NodeSplitter
+        matches = match_extractor.extract_markdown_images(
+            "This is text with an ![image[2]](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual([("image[2]", "https://i.imgur.com/zjjcJKZ.png")], matches)
+
+    def test_extract_markdown_links(self):
+        match_extractor = NodeSplitter
+        matches = match_extractor.extract_markdown_links(
+            "This is text with a [link](https://www.boot.dev)"
+        )
+        self.assertListEqual([("link", "https://www.boot.dev")], matches)
+
+    def test_extract_markdown_links_nested_brackets(self):
+        match_extractor = NodeSplitter
+        matches = match_extractor.extract_markdown_links(
+            "[This link has [brackets] in it](http://example.com)"
+        )
+        self.assertListEqual([("This link has [brackets] in it", "http://example.com")], matches)
+
+    def test_extract_markdown_links_multiple_links(self):
+        match_extractor = NodeSplitter
+        matches = match_extractor.extract_markdown_links(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        )
+        self.assertListEqual([("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")], matches)
+
+    # TODO: ADD IN TEST CASES FOR IMAGES, match the links
