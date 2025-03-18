@@ -32,3 +32,35 @@ class NodeSplitter:
     def extract_markdown_links(text):
         match_image_text = re.findall(r"\[(.*?)\]\((.*?)\)", text)
         return match_image_text
+
+    @staticmethod
+    def split_nodes_image(old_nodes):
+        pass
+
+    # Example Node: node = TextNode(
+    #               "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+    #               TextType.TEXT,
+    #               )
+
+    # Example output
+    # [
+    #     TextNode("This is text with a link ", TextType.TEXT),
+    #     TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+    #     TextNode(" and ", TextType.TEXT),
+    #     TextNode(
+    #         "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+    #     ),
+    # ]
+    @staticmethod
+    def split_nodes_link(old_nodes):
+        new_nodes = []
+        splitter = NodeSplitter
+        for node in old_nodes:
+            reformat_text = node.text.re.split(r"\[(.*?)\)")
+            text = splitter.extract_markdown_links(node.text)
+            for index, node_text in enumerate(node_text_list):
+                if index % 2 == 1:
+                    new_nodes.append(TextNode(node_text, TextType.NORMAL))
+                else:
+                    new_nodes.append(TextNode(node_text, node.text_type))
+        return new_nodes
