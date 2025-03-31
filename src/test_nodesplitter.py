@@ -2,6 +2,7 @@ import unittest
 
 from textnode import TextNode, TextType
 from nodesplitter import NodeSplitter
+from leafnode import LeafNode
 
 
 class TestNodeSplitter(unittest.TestCase):
@@ -111,3 +112,123 @@ class TestNodeSplitter(unittest.TestCase):
             "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
         )
         self.assertListEqual([("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")], matches)
+
+    def test_split_images_multiple_images(self):
+        self.maxDiff = None
+        node = TextNode(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png) and another ![second image](https://i.imgur.com/3elNhQu.png)",
+            TextType.NORMAL,
+        )
+        node_2 = TextNode(
+            "![Armadillo](https://i.imgur.com/armadillo.png) This is a picture of a Armadillo and ![RolyPoly](https://i.imgur.com/rolypoly.png) a picture of a Roly Poly",
+            TextType.NORMAL,
+        )
+        new_nodes = NodeSplitter.split_nodes_image([node, node_2])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an ", TextType.NORMAL),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and another ", TextType.NORMAL),
+                TextNode(
+                    "second image", TextType.IMAGE, "https://i.imgur.com/3elNhQu.png"
+                ),
+                TextNode("Armadillo", TextType.IMAGE, "https://i.imgur.com/armadillo.png"),
+                TextNode(" This is a picture of a Armadillo and ", TextType.NORMAL),
+                TextNode("RolyPoly", TextType.IMAGE, "https://i.imgur.com/rolypoly.png"),
+                TextNode(" a picture of a Roly Poly", TextType.NORMAL)
+            ],
+            new_nodes,
+        )
+
+    def test_split_images_just_image(self):
+        node = TextNode(
+            "![Frog](https://www.animalpedia.com/frog.png)",
+            TextType.NORMAL)
+        new_nodes = NodeSplitter.split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("Frog", TextType.IMAGE, "https://www.animalpedia.com/frog.png"),
+            ],
+            new_nodes,
+        )
+
+    def test_split_images_not_text_node(self):
+        node = TextNode(
+            "How many kinds of frogs are there? Check this out for example! ![Frog](https://www.animalpedia.com/frog.png)",
+            TextType.IMAGE)
+        new_nodes = NodeSplitter.split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("How many kinds of frogs are there? Check this out for example! ![Frog](https://www.animalpedia.com/frog.png)", TextType.IMAGE)
+            ],
+            new_nodes,
+        )
+
+    def test_split_links(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.NORMAL)
+        new_nodes = NodeSplitter.split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with a link ", TextType.NORMAL),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and ", TextType.NORMAL),
+                TextNode(
+                    "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+                ),
+            ],
+            new_nodes,
+        )
+
+    def test_split_links_not_text_node(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.LINK)
+        new_nodes = NodeSplitter.split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode(
+                    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+                    TextType.LINK)
+            ],
+            new_nodes,
+        )
+
+    def test_split_links_just_link(self):
+        node = TextNode(
+            "[to boot dev](https://www.boot.dev)",
+            TextType.NORMAL)
+        new_nodes = NodeSplitter.split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            ],
+            new_nodes,
+        )
+
+    def test_split_links_multiple(self):
+        self.maxDiff = None
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.NORMAL,
+        )
+        node_2 = TextNode(
+            "[Youtube](https://www.youtube.com) is my favorite website, I like it better than [Bing](https://www.bing.com)",
+            TextType.NORMAL,
+        )
+        new_nodes = NodeSplitter.split_nodes_link([node, node_2])
+        self.assertListEqual(
+            [
+                TextNode("This is text with a link ", TextType.NORMAL),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and ", TextType.NORMAL),
+                TextNode(
+                    "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+                ),
+                TextNode("Youtube", TextType.LINK, "https://www.youtube.com"),
+                TextNode(" is my favorite website, I like it better than ", TextType.NORMAL),
+                TextNode("Bing", TextType.LINK, "https://www.bing.com")
+            ],
+            new_nodes,
+        )

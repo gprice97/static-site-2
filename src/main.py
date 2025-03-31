@@ -18,8 +18,16 @@ def main():
     new_nodes = splitter.split_nodes_delimiter([node_1], "**", TextType.BOLD)
     print(new_nodes)
     text = "[This link has [brackets] in it](http://example.com)"
-    text_2 = "[link](http://example.com(with)stuff)"
+    text_2 = "[link](http://example.com/with-stuff)"
+    print(splitter.extract_markdown_links(text))
     print(splitter.extract_markdown_links(text_2))
+    text_3 = TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)", TextType.NORMAL)
+    print(splitter.split_nodes_link([text_3]))
+    text_4 = TextNode(
+            "![Armadillo](https://i.imgur.com/armadillo.png) This is a picture of a Armadillo and ![RolyPoly](https://i.imgur.com/rolypoly.png) a picture of a Roly Poly",
+            TextType.NORMAL,
+        )
+    print(splitter.split_nodes_image([text_3, text_4]))
 
 
 
