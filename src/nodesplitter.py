@@ -8,15 +8,16 @@ class NodeSplitter:
         new_nodes = []
         for node in old_nodes:
             if delimiter not in node.text:
-                new_nodes.extend(TextNode(node.text, node.text_type))
-            node_text_list = node.text.split(delimiter)
-            if len(node_text_list) % 2 != 1:
-                raise Exception("There is a delimiter present without it's matching pair")
-            for index, node_text in enumerate(node_text_list):
-                if index % 2 == 1:
-                    new_nodes.append(TextNode(node_text, text_type))
-                else:
-                    new_nodes.append(TextNode(node_text, node.text_type))
+                new_nodes.append(TextNode(node.text, node.text_type))
+            else:
+                node_text_list = node.text.split(delimiter)
+                if len(node_text_list) % 2 != 1:
+                    raise Exception("There is a delimiter present without it's matching pair")
+                for index, node_text in enumerate(node_text_list):
+                    if index % 2 == 1:
+                        new_nodes.append(TextNode(node_text, text_type))
+                    else:
+                        new_nodes.append(TextNode(node_text, node.text_type))
         return new_nodes
 
     # Example text: "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)
@@ -99,3 +100,12 @@ class NodeSplitter:
             if current_node_text:
                 new_nodes.append(TextNode(current_node_text, TextType.NORMAL))
         return new_nodes
+
+    def text_to_text_nodes(text):
+        nodes = [TextNode(text, TextType.NORMAL)]
+        nodes = NodeSplitter.split_nodes_delimiter(nodes, '**', TextType.BOLD)
+        nodes = NodeSplitter.split_nodes_delimiter(nodes, '_', TextType.ITALIC)
+        nodes = NodeSplitter.split_nodes_delimiter(nodes, '`', TextType.CODE)
+        nodes = NodeSplitter.split_nodes_image(nodes)
+        nodes = NodeSplitter.split_nodes_link(nodes)
+        return [node for node in nodes if node.text != ""]

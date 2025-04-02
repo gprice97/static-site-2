@@ -152,6 +152,18 @@ class TestNodeSplitter(unittest.TestCase):
             new_nodes,
         )
 
+    def test_split_images_no_image(self):
+        node = TextNode(
+            "I like trains",
+            TextType.NORMAL)
+        new_nodes = NodeSplitter.split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("I like trains", TextType.NORMAL, ),
+            ],
+            new_nodes,
+        )
+
     def test_split_images_not_text_node(self):
         node = TextNode(
             "How many kinds of frogs are there? Check this out for example! ![Frog](https://www.animalpedia.com/frog.png)",
@@ -207,6 +219,18 @@ class TestNodeSplitter(unittest.TestCase):
             new_nodes,
         )
 
+    def test_split_links_no_link(self):
+        node = TextNode(
+            "Boot Dev Bear",
+            TextType.NORMAL)
+        new_nodes = NodeSplitter.split_nodes_link([node])
+        self.assertListEqual(
+            [
+                TextNode("Boot Dev Bear", TextType.NORMAL),
+            ],
+            new_nodes,
+        )
+
     def test_split_links_multiple(self):
         self.maxDiff = None
         node = TextNode(
@@ -231,4 +255,37 @@ class TestNodeSplitter(unittest.TestCase):
                 TextNode("Bing", TextType.LINK, "https://www.bing.com")
             ],
             new_nodes,
+        )
+
+    def test_text_to_text_nodes(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes_list = NodeSplitter.text_to_text_nodes(text)
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.NORMAL),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.NORMAL),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.NORMAL),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.NORMAL),
+                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode(" and a ", TextType.NORMAL),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            nodes_list
+        )
+
+    def test_text_to_text_nodes_2(self):
+        text = "**text**_italic_`code block`![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg)[link](https://boot.dev)"
+        nodes_list = NodeSplitter.text_to_text_nodes(text)
+        self.assertListEqual(
+            [
+                TextNode("text", TextType.BOLD),
+                TextNode("italic", TextType.ITALIC),
+                TextNode("code block", TextType.CODE),
+                TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+                TextNode("link", TextType.LINK, "https://boot.dev"),
+            ],
+            nodes_list
         )
