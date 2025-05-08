@@ -29,6 +29,17 @@ def main():
         )
     print(splitter.split_nodes_image([text_3, text_4]))
 
+    md = """
+    This is **bolded** paragraph
+
+    This is another paragraph with _italic_ text and `code` here
+    This is the same paragraph on a new line
+
+    - This is a list
+    - with items
+    """
+    print(NodeSplitter.markdown_to_blocks(md))
+
 
 
 if __name__ == "__main__":

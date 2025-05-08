@@ -109,3 +109,13 @@ class NodeSplitter:
         nodes = NodeSplitter.split_nodes_image(nodes)
         nodes = NodeSplitter.split_nodes_link(nodes)
         return [node for node in nodes if node.text != ""]
+
+    @staticmethod
+    def markdown_to_blocks(markdown):
+        blocks = markdown.split('\n\n')
+        for block in blocks:
+            str.strip(block)
+            if block == "":
+                blocks.remove(block)
+
+        return blocks
