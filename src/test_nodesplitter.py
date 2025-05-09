@@ -5,6 +5,7 @@ from nodesplitter import NodeSplitter
 from leafnode import LeafNode
 
 
+
 class TestNodeSplitter(unittest.TestCase):
 
     def test_bold_text(self):
@@ -290,16 +291,17 @@ class TestNodeSplitter(unittest.TestCase):
             nodes_list
         )
 
+## Working on This part
     def test_markdown_to_blocks(self):
         md = """
-    This is **bolded** paragraph
+        This is **bolded** paragraph
 
-    This is another paragraph with _italic_ text and `code` here
-    This is the same paragraph on a new line
+        This is another paragraph with _italic_ text and `code` here
+        This is the same paragraph on a new line
 
-    - This is a list
-    - with items
-    """
+        - This is a list
+        - with items
+        """
         blocks = NodeSplitter.markdown_to_blocks(md)
         self.assertEqual(
             blocks,
@@ -309,3 +311,28 @@ class TestNodeSplitter(unittest.TestCase):
                 "- This is a list\n- with items",
             ],
         )
+
+    def test_empty_string(self):
+        md = ""
+        blocks = NodeSplitter.markdown_to_blocks(md)
+        self.assertEqual(blocks, [])
+
+    def test_single_block(self):
+        md = "Just one block with no newlines"
+        blocks = NodeSplitter.markdown_to_blocks(md)
+        self.assertEqual(blocks, ["Just one block with no newlines"])
+
+    def test_excessive_newlines(self):
+        md = """
+        First block
+
+
+        Second block after too many newlines
+        """
+        blocks = NodeSplitter.markdown_to_blocks(md)
+        self.assertEqual(blocks, ["First block", "Second block after too many newlines"])
+
+    def test_whitespace_trimming(self):
+        md = "  Block with spaces   \n\n   Another with spaces   "
+        blocks = NodeSplitter.markdown_to_blocks(md)
+        self.assertEqual(blocks, ["Block with spaces", "Another with spaces"])

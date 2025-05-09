@@ -110,12 +110,19 @@ class NodeSplitter:
         nodes = NodeSplitter.split_nodes_link(nodes)
         return [node for node in nodes if node.text != ""]
 
-    @staticmethod
+    # Working on this part
     def markdown_to_blocks(markdown):
         blocks = markdown.split('\n\n')
-        for block in blocks:
-            str.strip(block)
-            if block == "":
-                blocks.remove(block)
+        clean_blocks = []
 
-        return blocks
+        for block in blocks:
+            stripped_block = block.strip()
+            if not stripped_block:
+                continue
+
+            lines = stripped_block.split('\n')
+            cleaned_lines = [line.strip() for line in lines]
+            clean_block = '\n'.join(cleaned_lines)
+            clean_blocks.append(clean_block)
+
+        return clean_blocks
